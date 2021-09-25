@@ -12,6 +12,8 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 library(tidyr)
+library(tidyverse)
+library(cowplot)
 ```
 
 # Marriage and Partisan Polarization
@@ -45,7 +47,7 @@ Once again, the .Rmd version of this file has code you can use to load the data.
 
 ```{r faces, include=FALSE}
 # remember to use the correct file name
-marriage_data <- read_csv('filenamehere_Sep23.csv')
+marriage_data <- read_csv('Sep23ClassData_clean.csv')
 ```
 
 These data are *not* the raw output from the survey you took. In particular, all of the indicator variables are the result of coding decisions and data processing done by the instructors (based on the procedures used in Klar et al. (2018)). For the first few questions, just open up the data and take a look at it (ask us if you need help viewing the data in spreadsheet format in RStudio).
@@ -56,6 +58,32 @@ These data are *not* the raw output from the survey you took. In particular, all
 
 ## Question 2
 **How was the \texttt{polarized} variable defined? Is there another way you might consider coding this variable for individual polarization? What would be an advantage and a disadvantage of your alternative approach?**
+
+```{r, Q2}
+
+#What is the difference in Very Happy/Very Unhappy between strong/not-strong partisans?
+
+marriage_data %>% 
+  group_by(strongPARTISAN) %>% 
+  count(polarized)
+
+#How many people were very happy with in-party but indifferent towards out-party? Vise versa?
+
+inpartyfav <- marriage_data %>% 
+  mutate(inpartyfav = if_else(inPartyHappy == TRUE & outPartyUnhappy == FALSE, 1, 0))
+
+  #indifferent towards own party but discriminatory towards outparty
+
+outpartyhate <-  marriage_data %>% 
+  mutate(outpartyhate = if_else(inPartyHappy == FALSE & outPartyUnhappy == TRUE, 1, 0)) %>% 
+  filter(outpartyhate == 1)
+
+outpartyhate %>% 
+  count(treatment)
+
+```
+
+
 
 \bigskip
 \bigskip
@@ -83,6 +111,27 @@ ggplot(data = marriage_data %>% filter(is.na(outPartyUnhappy)==FALSE)) +
 ## Question 6 (Data Science Question)
 **We might also be interested in if things looked different for weak vs. strong partisans. Pick one of the two outcome variables you just examined and make a plot that would help us understand if responses within and across treatment groups differ between weak and strong partisans.**
 
+```{r}
+
+#filter for strong partisans
+
+strong_partisan <- marriage_data %>% 
+  filter(strongPARTISAN == TRUE) %>% 
+  filter(is.na(outPartyUnhappy)==FALSE)
+
+strong_partisan %>% 
+  ggplot(aes(x = outPartyUnhappy, y = ..prop..)) +
+  geom_bar(stat = "count", group = 1) +
+  facet_wrap(~treatment)
+
+
+#ggplot(data = marriage_data %>% filter(is.na(outPartyUnhappy)==FALSE)) + 
+  #geom_bar(mapping = aes(x = outPartyUnhappy, y = ..prop.., group = 1), stat = "count") + 
+  #facet_wrap(~treatment) + ylab("Proportion") + xlab("Unhappy with Out-Party Marriage")
+
+
+
+```
 
 
 ## Question 7

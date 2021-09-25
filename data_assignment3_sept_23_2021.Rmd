@@ -119,16 +119,33 @@ strong_partisan <- marriage_data %>%
   filter(strongPARTISAN == TRUE) %>% 
   filter(is.na(outPartyUnhappy)==FALSE)
 
-strong_partisan %>% 
-  ggplot(aes(x = outPartyUnhappy, y = ..prop..)) +
-  geom_bar(stat = "count", group = 1) +
-  facet_wrap(~treatment)
+p1 <- 
+  strong_partisan %>% 
+  ggplot() +
+  geom_bar(mapping = aes(x = outPartyUnhappy, y = ..prop.., group = 1), stat = "count") +
+  facet_wrap(~treatment) +
+  scale_y_continuous(breaks = c(0.0, 0.25, 0.5, 0.75, 1), 
+                     labels = c("0.00", "0.25", "0.50", "0.75", "1"),
+                     limits = c(0.0,1))
+  #labs(title = "Treatment Effect on Self-Identified Strong Partisans")
 
+#filter for weak partisans
 
-#ggplot(data = marriage_data %>% filter(is.na(outPartyUnhappy)==FALSE)) + 
-  #geom_bar(mapping = aes(x = outPartyUnhappy, y = ..prop.., group = 1), stat = "count") + 
-  #facet_wrap(~treatment) + ylab("Proportion") + xlab("Unhappy with Out-Party Marriage")
+weak_partisan <- marriage_data %>% 
+  filter(strongPARTISAN == FALSE) %>% 
+  filter(is.na(outPartyUnhappy)==FALSE)
 
+p2 <- 
+  weak_partisan %>% 
+  ggplot() +
+  geom_bar(aes(x = outPartyUnhappy, y = ..prop.., group = 1 ), stat = "count") +
+  facet_wrap(~treatment) +
+  #labs(title = "Treatment Effect on Self-Identified 'Weak' Partisans") +
+  scale_y_continuous(breaks = c(0.0, 0.25, 0.5, 0.75, 1), 
+                     labels = c("0.00", "0.25", "0.50", "0.75", "1"),
+                     limits = c(0.0,1))
+
+plot_grid(p1, p2, labels = c("Strong Partisans", "Weak Partisans"), label_size = 10)
 
 
 ```

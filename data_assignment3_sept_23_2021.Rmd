@@ -111,7 +111,7 @@ ggplot(data = marriage_data %>% filter(is.na(outPartyUnhappy)==FALSE)) +
 ## Question 6 (Data Science Question)
 **We might also be interested in if things looked different for weak vs. strong partisans. Pick one of the two outcome variables you just examined and make a plot that would help us understand if responses within and across treatment groups differ between weak and strong partisans.**
 
-```{r}
+```{r, q6}
 
 #filter for strong partisans
 
@@ -178,7 +178,8 @@ marriage_data %>%
   geom_bar(aes(x = outPartyUnhappy, 
                y = ..prop.., group = 1, 
            stat = "count")) +
-  facet_grid(party ~ treatment)
+  facet_grid(party ~ treatment) +
+  labs(title = "Treatment Effect Between Democrats and Republicans")
 
 
 ```
